@@ -1,0 +1,8 @@
+Changelog for Micro-Framework
+
+###
+
+version 0.9
+	* First commit.
+	* Simple example must be added.
+	* Documentation is not ready.
