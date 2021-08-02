@@ -1,6 +1,6 @@
 *
-!classes
-!core
+!classes/*
+!core/*
 !.gitignore
 !changelog.txt
 !README.md
