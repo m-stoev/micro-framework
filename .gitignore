@@ -1,6 +1,10 @@
-*
-!classes/*
-!core/*
-!.gitignore
-!changelog.txt
-!README.md
+.settings
+build
+help
+nbproject
+other_projects
+projects/*
+resources
+wo-test
+.buildpath
+.project
