@@ -1,13 +1,5 @@
 *
 
-!classes
-!core
-
-!config
-config/autoloader.php
-config/config.php
-config/router.php
-
-!index.php
-!changelog.tx
-!README.md
+!.gitignore
+README.md
+changelog.txt
