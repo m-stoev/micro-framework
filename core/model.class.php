@@ -3,10 +3,8 @@
 /**
  * Class Model
  * 
- * model.class.php
- * jan.2015
- * Miroslav Stoev
- * micro-framework
+ * @author Miroslav Stoev
+ * @package micro-framework
  */
 class Model extends SQL_Query
 {
@@ -32,7 +30,6 @@ class Model extends SQL_Query
     }
     
     /**
-     * Function get_ip()
      * The function get the user ip address
      * 
      * @param there are no parameters
@@ -56,7 +53,6 @@ class Model extends SQL_Query
     }
 
     /**
-     * Function generate_id
      * Generate random and unique id number
      * 
      * @param (int) $len the lenght of generated id
@@ -69,12 +65,12 @@ class Model extends SQL_Query
         $alphas   = range('a', 'z');
         $alphasUp = range('A', 'Z');
         $nums     = range(0, 9);
-        $symbols  = array('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-',
-            '=');
+        $symbols  = array('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '=');
 
         if ($special_symbols) {
             $allSymbols = array_merge($alphas, $alphasUp, $nums, $symbols);
-        } else {
+        }
+        else {
             $allSymbols = array_merge($alphas, $alphasUp, $nums);
         }
 
@@ -87,7 +83,6 @@ class Model extends SQL_Query
     }
 
     /**
-     * Function get_paginated_results_by_query
      * Gets paginated results by predefined query, exclude the limit.
      * Use it when we have complicated select, with joins, groups and etc.,
      * because we do not use MySQL COUNT function.
@@ -107,22 +102,20 @@ class Model extends SQL_Query
         $this->query($query);
         $all_res = $this->query_results;
 
-        $all_pages = ceil($all_res / $res_per_page);
-        // the first record in limit condition
-        $start_record = $res_per_page * $page_num - $res_per_page;
-        $query .= " LIMIT ".intval($start_record).", ".intval($res_per_page);
+        $all_pages      = ceil($all_res / $res_per_page);
+        $start_record   = $res_per_page * $page_num - $res_per_page; // the first record in limit condition
+        $query          .= " LIMIT ".intval($start_record).", ".intval($res_per_page);
 
         $this->pdo_params_arr = $pdo_params;
 
         return [
-            'records_cnt' => $all_res,
-            'records' => $this->query($query, true, 'id')
+            'records_cnt'   => $all_res,
+            'records'       => $this->query($query, true, 'id')
         ];
     }
 
     /**
-     * Function create_pages
-     * The function generate pagining
+     * The function generate paginated results in HTML li tags.
      * 
      * @param (array) $get - the get variables
      * @param (int) $records_cnt - all results
@@ -133,19 +126,19 @@ class Model extends SQL_Query
      */
     public final function create_pages(array $get, $records_cnt, $controller = '', $action = '')
     {
-        $page = 1;
+        $page               = 1;
+        $results_per_page   = defined('RESULTS_PER_PAGE') ? RESULTS_PER_PAGE : 5;
+        $pagination_text    = '';
+        
         if (isset($get['page'])) {
             $page = intval($get['page']);
             unset($get['page']);
         }
-
-        $results_per_page = RESULTS_PER_PAGE;
+        
         if (isset($get['results'])) {
             $results_per_page = intval($get['results']);
             unset($get['results']);
         }
-
-        $pagination_text = '';
 
         // count of visible pages buttons + the current
         $visible_pages_links = 11;
@@ -164,7 +157,7 @@ class Model extends SQL_Query
             $url_prefix = COOKIE_PATH;
             $url_prefix .= $controller != '' ? $controller.'/' : '';
             $url_prefix .= ($action != '' and $action != 'index') ?
-            str_replace('_', '-', $action).'/' : '';
+                str_replace('_', '-', $action).'/' : '';
             $url_prefix .= $get ? '?'.http_build_query($get).'&' : '?';
             $url_prefix .= 'results='.$results_per_page.'&page=';
 
@@ -251,7 +244,6 @@ class Model extends SQL_Query
     }
 
     /**
-     * Function get_visitor_data_by_ip
      * Get information for the visitor's place by its IP
      * we uese web service http://ip-api.com/json/
      * 
@@ -276,7 +268,6 @@ class Model extends SQL_Query
     }
     
     /**
-     * Function generate_table_name_from_model
      * Generate table name from the name of the model
      * 
      * @param (string) $model_name
@@ -297,7 +288,6 @@ class Model extends SQL_Query
     }
 
     /**
-     * Function encript_pass
      * The function use recomended from php.net way to encript the passwords. It is part of PHP.
      * 
      * @param (string) $pass

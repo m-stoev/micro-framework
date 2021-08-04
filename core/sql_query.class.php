@@ -3,15 +3,13 @@
 /**
  * Class SQL_Query
  * 
- * sql_query.class.php
+ * Executes SQL queries.
  * 
- * Miroslav Stoev
- * 
- * micro-framework
+ * @author Miroslav Stoev
+ * @package micro-framework
  */
 class SQL_Query
 {
-    # few public options
     public $query_debug   = false; // print query
     public $show_num_rows = false; // print number of rows
     public $die           = false; // stop the script
@@ -21,30 +19,29 @@ class SQL_Query
     protected $table_fields         = array();	// used table fields
     protected $query_results        = 0;		// the number of results
     
-    private $_mysql_compare_operators = [
+    private $_memcache;
+    private $_password_field_names      = array(); // these fields must be set in config file
+    private $_mysql_compare_operators   = array(
         '>', '>=', '<', '<=', '<>', '!=', '=', '<=>',
         'LIKE', 'NOT LIKE', 'IS NOT NULL', 'IS NOT', 'IS NULL', 'IS', 'IN'
-    ];
-    private $_password_field_names  = array(); // these fields must be set in config file
-    private $_query_elements        = array(
-        'select' => '',
-        'update' => '',
-        'insert' => '',
-        'from' => '',
-        'left_join' => '',
-        'where' => '',
-        'group_by' => '',
-        'order' => '',
-        'limit' => '',
-        'is_delete_query' => '',
     );
-    private $_memcache;
+    private $_query_elements            = array(
+        'select'            => '',
+        'update'            => '',
+        'insert'            => '',
+        'from'              => '',
+        'left_join'         => '',
+        'where'             => '',
+        'group_by'          => '',
+        'order'             => '',
+        'limit'             => '',
+        'is_delete_query'   => '',
+    );
 
     /**
-     * Function connect
      * This function connect us to DB.
      * We will not use __construct function,
-     * this is the most important and base function here and will define some variables here.
+     * this is the most important and base function here and will define some variables in it.
      *
      * @param (string) $host - host name
      * @param (string) $user - user name
@@ -61,15 +58,13 @@ class SQL_Query
                     PDO::ATTR_EMULATE_PREPARES   => true,
                 );
                 
-                $dsn = "mysql:host={$host};dbname={$db};charset=utf8";
+                $dsn            = "mysql:host={$host};dbname={$db};charset=utf8";
+                $this->_conn    = new PDO($dsn, $user, $pwd, $options);
 
-                $this->_conn = new PDO($dsn, $user, $pwd, $options);
-
-            //    $this->_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->_conn->exec("set names utf8");
             }
             catch (Exception $e) {
-                Text::create_error_log('Connection Exception: ' . $e->getMessage());
+                Text::create_log($e->getMessage(), 'Connection Exception: ');
                 die('Connection Exception.');
             }
             
@@ -88,15 +83,13 @@ class SQL_Query
     }
 
     /**
-     * Function insert_or_update
      * Try to insert data, if we have duplicate unique key, update.
+     * The user MUST secure its input data!
      *
-     * @param array $assoc_array - associative array with fields names and their values
+     * @param array $assoc_array associative array with fields names and their values
      * @param string $table
      *
-     * @return (object) $this
-	 * 
-	 * @deprecated - secure the input or remove the method
+     * @return object $this
      */
     public final function insert_or_update(array $assoc_array, $table = '')
     {
@@ -109,6 +102,7 @@ class SQL_Query
         }
 
         $table_fields = $this->get_table_fields($table);
+        
         if(!$table_fields) {
             return false;
         }
@@ -161,7 +155,6 @@ class SQL_Query
     }
 
     /**
-     * Function get_last_added_id
      * Return the last added ID from a query
      */
     public final function get_last_added_id()
@@ -170,8 +163,8 @@ class SQL_Query
     }
 
     /**
-     * Function select
-     * Here we put fields we want to select with their alias if we need
+     * Here we put fields we want to select with their alias if we need.
+     * The user MUST secure the inputs!
      * 
      * @param (array) $fields - contain arrays with name - alias pairs
      *      example: [ ['field', 'field AS alias'] ]
@@ -180,44 +173,43 @@ class SQL_Query
     public final function select(array $fields, $table = '')
     {
         if (empty($fields)) {
-            Text::create_error_log("Wrong select parameters for SQL select() !!!");
+            Text::create_log("select() Error - Wrong select parameters for SQL select() !!!");
+            return $this;
         }
 
         if(!empty($table)) {
             $this->table = $table;
         }
 
-        $select = [];
-
         // when we select all with "*" and have join, the id field will be overwrite
         // with the id of the last joined table, same for the other fields with duplicate names
         if (count($fields) == 1 and $fields[0] == "*") {
             $this->_query_elements['select'] = "*";
+            
             return $this;
         }
 
         $this->_query_elements['select'] = implode(', ', $fields);
+        
         return $this;
     }
 
     /**
-     * Function update
-     *
      * @param (string) $table
-     * @param (array) $fields - field => values pairs
+     * @param (array) $fields - [field => values, ] pairs
      *
      * @return (object) $this
      */
     public final function update($table, array $fields)
     {
         $this->table_fields = $this->get_table_fields($table);
+        
         if(!$this->table_fields) {
             return $this;
         }
 
-        $str = "UPDATE {$table} SET ";
-        // keep values here
-        $sets_arr = [];
+        $str        = "UPDATE {$table} SET ";
+        $sets_arr   = []; // keep values here
 
         foreach ($fields as $key => $val) {
             if(in_array($key, $this->table_fields)) {
@@ -227,8 +219,7 @@ class SQL_Query
                     $sets_arr[] = $key." = '{$this->encript_pass($val)}'";
                 }
                 else {
-                    $un_key = uniqid();
-
+                    $un_key     = uniqid();
                     $sets_arr[] = $key." = :{$un_key}";
 
                     $this->pdo_params_arr[":{$un_key}"] = $val;
@@ -244,10 +235,8 @@ class SQL_Query
     }
 
     /**
-     * Function insert
-     *
      * @param (string) $table
-     * @param (array) $fields - field => values pairs
+     * @param (array) $fields - [field => values, ] pairs
      * 
      * @return (object) $this
      */
@@ -261,8 +250,7 @@ class SQL_Query
             return $this;
         }
 
-        $keys_arr = array_keys($fields);
-
+        $keys_arr   = array_keys($fields);
 		$f_values	= array();
 		$f_names	= array();
 
@@ -270,18 +258,18 @@ class SQL_Query
         foreach ($keys_arr as $key => $val) {
             if(in_array($val, $this->table_fields)) {
 				// check for password field
-				if(
-					is_array($this->_password_field_names)
-					and in_array($val, $this->_password_field_names)
-					and $fields[$val] != ''
+				if(is_array($this->_password_field_names)
+					&& in_array($val, $this->_password_field_names)
+					&& $fields[$val] != ''
                 ) {
-					$f_names[] = $val; // fields array
+					$f_names[]  = $val; // fields array
 					$f_values[] = ":" . $val; // values array
-					$this->pdo_params_arr[":" . $val] = $this->encript_pass($fields[$val]);
+					
+                    $this->pdo_params_arr[":" . $val] = $this->encript_pass($fields[$val]);
 				}
 				// all other fields
 				else {
-					$f_names[] = $val; // fields array
+					$f_names[]  = $val; // fields array
 					$f_values[] = ":" . $val; // values array
 
 					$this->pdo_params_arr[":" . $val] = $fields[$val];
@@ -289,10 +277,9 @@ class SQL_Query
             }
         }
 
-        $keys_str = implode(',', $f_names);
-
-        $str .= $keys_str.") VALUES (";
-        $str .= implode(",", $f_values) . ")";
+        $keys_str   = implode(',', $f_names);
+        $str        .= $keys_str.") VALUES (";
+        $str        .= implode(",", $f_values) . ")";
 
 		$this->_query_elements['insert'] = $str;
 
@@ -300,7 +287,6 @@ class SQL_Query
     }
 
     /**
-     * Function delete
      * Here main part is for where clause,
      * with delete() we only confirm the query
      */
@@ -311,7 +297,6 @@ class SQL_Query
     }
 
     /**
-     * Function from
      * Define table from we want to get data. The escape by default is false
      * because most of the time table is added manual, not from parameter.
      * 
@@ -326,7 +311,6 @@ class SQL_Query
     }
 
     /**
-     * Function left_join
      * Describe a table for left join
      *
      * @param (string) $t_name - table name
@@ -336,8 +320,9 @@ class SQL_Query
      */
     public final function left_join($table, $fields)
     {
-        if (empty(trim($table)) or empty(trim($fields))) {
-            Text::create_error_log("First two parameters can not be empty !!!");
+        if (empty(trim($table)) || empty(trim($fields))) {
+            Text::create_log("left_join() Error - First two parameters can not be empty !!!");
+            return $this;
         }
 
         $this->_query_elements['left_join'] .= " LEFT JOIN {$table} ON {$fields}";
@@ -346,7 +331,6 @@ class SQL_Query
     }
 
     /**
-     * Function where
      * Generate WHERE clause in the query
      *
      * @param (string) $field - field name
@@ -358,12 +342,14 @@ class SQL_Query
     public final function where($field, $operand, $val)
     {
         // empty where clause
-        if (empty($field) or empty($operand)) {
-            Text::create_error_log("Empty parameters !!!");
+        if (empty($field) || empty($operand)) {
+            Text::create_log("where() Error - Empty parameters !!!");
+            return $this;
         }
 
-        if ($operand and ! in_array(trim($operand), $this->_mysql_compare_operators)) {
-            Text::create_error_log("Please check allowed logical operator !!!: '".print_r($operand)."'");
+        if (!in_array(trim($operand), $this->_mysql_compare_operators)) {
+            Text::create_log($operand, "where() Error - Please check allowed logical operator !!!");
+            return $this;
         }
 
 		$un_key = uniqid();
@@ -378,7 +364,6 @@ class SQL_Query
     }
 
     /**
-     * Function and_where
      * Add 'AND some_clause' to the where
      *
      * @param string $field
@@ -398,7 +383,6 @@ class SQL_Query
     }
 
     /**
-     * Function or_where
      * Add 'OR some_clause' to the where
      *
      * @param string $field
@@ -418,7 +402,6 @@ class SQL_Query
     }
 
     /**
-     * Function group_by
      * Generates GROUP BY part of the query. By default escape is false,
      * because most of the times the data do not come from input.
      *
@@ -428,11 +411,13 @@ class SQL_Query
      */
     public final function group_by($field)
     {
-        if (!$field) {
-            Text::create_error_log("Please put group by condition !!!");
+        if (empty($field)) {
+            Text::create_log("group_by() Error - Please put group by condition !!!");
+            return $this;
         }
 
-        if(!empty($this->table_fields) and !in_array($field, $this->table_fields)) {
+        if(!empty($this->table_fields) && !in_array($field, $this->table_fields)) {
+            Text::create_log($field, "group_by() Error - The field does not belongs to the table fields !!!");
             return $this;
         }
 
@@ -441,7 +426,6 @@ class SQL_Query
     }
 
     /**
-     * Function order_by
      * Generates ORDER BY part of the query
      *
      * @param (array) $conds - conditions
@@ -452,10 +436,12 @@ class SQL_Query
     public final function order_by(array $conds, $order = 'ASC')
     {
         if (count($conds) < 1) {
-            Text::create_error_log("Please put order by condition !!!");
+            Text::create_log("order_by() Error - Please put order by condition !!!");
+            return $this;
         }
 
         if(empty($this->table_fields)) {
+             Text::create_log("order_by() Error - table_fields is empty.");
             return $this;
         }
 
@@ -466,17 +452,13 @@ class SQL_Query
             }
         }
 
-        $this->_query_elements['order'] = " ORDER BY ";
-        $c = implode(', ', $conds);
-
-        $this->_query_elements['order'] .= $c;
+        $this->_query_elements['order'] = " ORDER BY " . implode(', ', $conds);
         $this->_query_elements['order'] .= ' '.$order." ";
-    //    Text::debug($this->_query_elements['order']."");
+        
         return $this;
     }
 
     /**
-     * Function limit
      * Set results limit for a query
      * 
      * @param (string) $limit
@@ -491,7 +473,6 @@ class SQL_Query
     }
 
     /**
-     * Function exec_query
      * Execute the generated query string.
      * 
      * @param (bool) $field_as_key - do we want field value to be used as key in array
@@ -523,14 +504,17 @@ class SQL_Query
         }
 
         // FROM, when update the syntax is different
-        if ($this->_query_elements['update'] == '' and $this->_query_elements['insert']
-            == '') {
+        if ($this->_query_elements['update'] == ''
+            && $this->_query_elements['insert'] == ''
+        ) {
             $query .= "FROM ".($this->_query_elements['from'] == '' ? $this->table
                     : $this->_query_elements['from'])." ";
         }
 
         // LEFT JOIN
-        if ($this->_query_elements['left_join'] != '' and ! $this->_query_elements['is_delete_query']) {
+        if ($this->_query_elements['left_join'] != '' 
+            && ! $this->_query_elements['is_delete_query']
+        ) {
             $query .= $this->_query_elements['left_join']." ";
         }
 
@@ -543,8 +527,9 @@ class SQL_Query
             $query .= $this->_query_elements['group_by'];
         }
 
-        if ($this->_query_elements['update'] == '' and $this->_query_elements['insert']
-            == '') {
+        if ($this->_query_elements['update'] == '' 
+            && $this->_query_elements['insert'] == ''
+        ) {
             // ORDER BY
             if ($this->_query_elements['order'] != '') {
                 $query .= $this->_query_elements['order']." ";
@@ -562,18 +547,17 @@ class SQL_Query
         }
 
         if ($debug) {
-            Text::debug($query,false);
+            Text::debug($query, false);
         }
 
         if ($die) {
-            die('exec query');
+            die('exec_query() die.');
         }
 
         return $this->query($query, $field_as_key, $ids_col);
     }
 
     /**
-     * Function delete_by_id
      * The function delete a record by ID
      *
      * @param (int) $id
@@ -589,7 +573,6 @@ class SQL_Query
     }
 
     /**
-     * Function mem_get_records
      * Get memcached keys by names in passed array
      * 
      * @param array $keys - name of keys
@@ -597,8 +580,8 @@ class SQL_Query
      */
     public final function mem_get_records(array $keys)
     {
-        $results = array();
-        $mem = $this->_get_memcached();
+        $results    = array();
+        $mem        = $this->_get_memcached();
         
         if(count($keys) > 1){
             foreach($keys as $k) {
@@ -613,7 +596,6 @@ class SQL_Query
     }
     
     /**
-     * Function mem_set_records
      * Set memcached keys
      * 
      * @param string $key
@@ -629,7 +611,6 @@ class SQL_Query
     }
 
     /**
-     * Function mem_del_records
      * Delete memcached keys
      * 
      * @param array $keys - name of keys
@@ -649,8 +630,6 @@ class SQL_Query
     }
 
     /**
-     * Function query
-     *
      * Execute user query and return results.
      * If this is SELECT query:
      * 		If query result is more than 1 row we return multidimensional array. If result have
@@ -687,25 +666,25 @@ class SQL_Query
             }
 
             // reset the arrays
-            $this->pdo_params_arr = array();
-            $this->table_fields = array();
+            $this->pdo_params_arr   = array();
+            $this->table_fields     = array();
         }
         catch (Exception $ex) {
-            $error_report = "\n".date("Y-m-d H:i:s").
-                "\n SQL Error: ". $ex->getMessage() ."\n".
-                "\n".'Your query:<br/>'."\n".$query."\n";
-
-            Text::create_error_log($error_report);
+            Text::create_log(
+                array($query, $ex->getMessage()),
+                'query() Exception:'
+            );
+            
+            return false;
         }
         
-        $query_to_lower = strtolower($query);
-        $this->query_results = $stmt->rowCount();
+        $query_to_lower         = strtolower($query);
+        $this->query_results    = $stmt->rowCount();
 
         // on UPDATE, INSERT or DELETE
-        if (
-            strpos($query_to_lower, 'update') !== false
-            or strpos($query_to_lower, 'insert') !== false
-            or strpos($query_to_lower, 'delete') !== false
+        if (strpos($query_to_lower, 'update') !== false
+            || strpos($query_to_lower, 'insert') !== false
+            || strpos($query_to_lower, 'delete') !== false
         ) {
             return $results;
         }
@@ -752,7 +731,6 @@ class SQL_Query
     }
 
     /**
-     * Function get_error
      * Get mysql error and number and return them.
      * 
      * @return (array)
@@ -760,13 +738,12 @@ class SQL_Query
     protected final function get_error($stmt = null)
     {
         return array(
-            'error_number' => $stmt->errorCode(),
-            'error_msg' => $stmt->errorInfo()
+            'error_number'  => $stmt->errorCode(),
+            'error_msg'     => $stmt->errorInfo()
         );
     }
 
     /**
-     * Function disconnect
      * This function disconnect us from the DB
      */
     protected final function disconnect()
@@ -775,7 +752,6 @@ class SQL_Query
     }
 
     /**
-     * Function get_table_fields
      * Get list of the fields in the table we work on.
      *
      * @param string $table
@@ -788,8 +764,10 @@ class SQL_Query
         }
 
         $stmt = $this->_conn->prepare("DESCRIBE {$table}");
+        
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        
         $results = $stmt->fetchAll();
 
         if($results) {
@@ -800,7 +778,6 @@ class SQL_Query
     }
 
     /**
-     * Function _get_memcached
      * Create and/or return memcache object
      * 
      * @return (object) memcache object
@@ -810,14 +787,16 @@ class SQL_Query
         if(!$this->_memcache) {
             try {
                 $this->_memcache = new Memcached();
+                
                 $this->_memcache->setOptions(array(
                     Memcached::OPT_PREFIX_KEY => MEM_KEY_PREFIX,
                     Memcached::OPT_COMPRESSION => TRUE
                 ));
+                
                 $this->_memcache->addServer(MEM_HOST, MEM_PORT);
             }
             catch (Exception $ex) {
-                Text::create_error_log('Error when try to create Memcached object, error: ' . $ex->getMessage());
+                Text::create_log($ex->getMessage(), '_get_memcached() Exception:');
             }
         }
         

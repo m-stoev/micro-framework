@@ -2,7 +2,12 @@ Changelog for Micro-Framework
 
 ###
 
-version 0.9
+version 0.9.1
+	* Attention - Do not use this version with previously created sites!
+	* Cleared and updated the files in core and classes directories.
+	* Added example configuration files.
+
+version 0.9.0
 	* First commit.
 	* Simple example must be added.
 	* Documentation is not ready.

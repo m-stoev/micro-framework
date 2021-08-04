@@ -1,25 +1,22 @@
 <?php
 
 /**
- * class Seasons
- * 
- * seasons.class.php
- * sep.2015
- * Miroslav Stoev
- * micro-framework
- * 
  * The class give us information about seasons and weather
+ * 
+ * @author Miroslav Stoev
+ * @package micro-framework
  */
-class Seasons {
+class Seasons
+{
 
     /**
-     * Function get_vars
      * Get variables for display snow or leaves
      * 
      * @param (array) $user_place = array('place' => 'place', 'lat' => 'lat')
      * @return (array) $seasons_vars
      */
-    public static function get_vars(array $user_place = []) {
+    public static function get_vars(array $user_place = [])
+    {
         // default latitude for north hemisphere
         if (!$user_place) {
             $user_place = [
@@ -30,19 +27,18 @@ class Seasons {
 
         // default season variables
         $seasons_vars = [
-            'falling' => null,
-            'season' => null,
-            'is_christmas' => false,
+            'falling'       => null,
+            'season'        => null,
+            'is_christmas'  => false,
         ];
-        $weathercast = array();
+        
+        $weathercast    = array();
+        $today          = time();
+        $autumn         = self::get_autumn_dates($user_place['lat']);
+        $winter         = self::get_winter_dates($user_place['lat']);
+        $cookies        = filter_input_array(INPUT_COOKIE);
 
-        $today = time();
-        $autumn = self::get_autumn_dates($user_place['lat']);
-        $winter = self::get_winter_dates($user_place['lat']);
-        $cookies = filter_input_array(INPUT_COOKIE);
-
-        if (
-            (isset($cookies['isWinterStarted']) and $cookies['isWinterStarted'] == 1)
+        if ( (isset($cookies['isWinterStarted']) and $cookies['isWinterStarted'] == 1)
             or ( $today > $winter['start'] and $today < $winter['end'])
         ) {
             $seasons_vars['season'] = 'winter';
@@ -55,42 +51,41 @@ class Seasons {
         try {
             $weathercast = file_get_contents(
                 'http://api.openweathermap.org/data/2.5/weather?units=metric&q='
-                    . $user_place['place'] . '&APPID=830acc8a71afda60cac95f4d4d5f2885'
+                    . $user_place['place'] . '&APPID=' // set your App ID here
             );
             $weathercast = json_decode($weathercast, true);
         }
         catch(Exception $e) {}
-var_dump($weathercast);
+
         if ($weathercast and $weathercast['cod'] != 404) {
             if (is_array($weathercast)) {
                 // check for snow codes
                 // for help: http://openweathermap.org/weather-conditions
-                $snow_codes = array(600, 601, 602, 611, 612, 615, 616, 620, 621, 622);
-                $weather_code = $weathercast['weather'][0]['id'];
+                $snow_codes     = array(600, 601, 602, 611, 612, 615, 616, 620, 621, 622);
+                $weather_code   = $weathercast['weather'][0]['id'];
 
                 if (in_array($weather_code, $snow_codes)) {
-                    $seasons_vars['falling'] = 'snow';
-                    $seasons_vars['season'] = 'winter';
+                    $seasons_vars['falling']    = 'snow';
+                    $seasons_vars['season']     = 'winter';
 
                     // if there is snow and still is autumn just put an coockie,
                     // to know winter is here :)
                     if ($seasons_vars['season'] != 'winter') {
-                        setcookie('isWinterStarted', 1, 60 * 60 * 24 * 30, COOKIE_PATH, COOKIE_DOMAIN, false, false);
+                        setcookie('isWinterStarted', 1, 60 * 60 * 24 * 30, COOKIE_PATH, SERVER_NAME, false, false);
                     }
                 }
                 // if there are no snow conditions, but the current temp is < 1 deg
                 // we will accept it is snow during autumn or spring, and will set cookie again
                 elseif ($seasons_vars['season'] != 'winter') {
                     if ($weathercast['main']['temp'] < 1) {
-                        setcookie('isWinterStarted', 1, time() + 60 * 60 * 24 * 30, COOKIE_PATH, COOKIE_DOMAIN, false, false);
+                        setcookie('isWinterStarted', 1, time() + 60 * 60 * 24 * 30, COOKIE_PATH, SERVER_NAME, false, false);
                     }
                 }
             }
         }
 
         // check for Christmas holidays
-        if (
-            ((int) date('m') == 12 and (int) date('d') > 15)
+        if ( ((int) date('m') == 12 and (int) date('d') > 15)
             or ( (int) date('m') == 1 and (int) date('d') <= 5)
         ) {
             $seasons_vars['is_christmas'] = true;
@@ -117,14 +112,14 @@ var_dump($weathercast);
         if ($lat > 0) {
             return array(
                 'start' => strtotime(date("Y") . "-03-22"),
-                'end' => strtotime(date("Y") . "-06-21"),
+                'end'   => strtotime(date("Y") . "-06-21"),
             );
         }
         // south
         else {
             return array(
                 'start' => strtotime(date("Y") . "-09-23"),
-                'end' => strtotime(date("Y") . "-12-21"),
+                'end'   => strtotime(date("Y") . "-12-21"),
             );
         }
     }
@@ -134,14 +129,14 @@ var_dump($weathercast);
         if ($lat > 0) {
             return array(
                 'start' => strtotime(date("Y") . "-09-22"),
-                'end' => strtotime(date("Y") . "-12-20"),
+                'end'   => strtotime(date("Y") . "-12-20"),
             );
         }
         // south
         else {
             return array(
                 'start' => strtotime(date("Y") . "-03-21"),
-                'end' => strtotime(date("Y") . "-06-21"),
+                'end'   => strtotime(date("Y") . "-06-21"),
             );
         }
     }
@@ -153,14 +148,14 @@ var_dump($weathercast);
             if (date("m") == 12) {
                 return array(
                     'start' => strtotime(date("Y") . "-12-21"),
-                    // get next year
-                    'end' => strtotime((date("Y") + 1) . "-03-21"),
+                    'end'   => strtotime((date("Y") + 1) . "-03-21"), // get next year
                 );
-            } else {
+            }
+            else {
                 return array(
                     // get previous year
                     'start' => strtotime((date("Y") - 1) . "-12-21"),
-                    'end' => strtotime(date("Y") . "-03-21"),
+                    'end'   => strtotime(date("Y") . "-03-21"),
                 );
             }
         }
@@ -168,7 +163,7 @@ var_dump($weathercast);
         else {
             return array(
                 'start' => strtotime(date("Y") . "-06-22"),
-                'end' => strtotime(date("Y") . "-09-22"),
+                'end'   => strtotime(date("Y") . "-09-22"),
             );
         }
     }

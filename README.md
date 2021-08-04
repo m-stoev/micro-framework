@@ -1,3 +1,5 @@
 # micro-framework
 
-A slim framework if someone need a frame and not afraid to write some code.
+Versy simple PHP framework if someone need.
+With it you can create simple web sites.
+You can set your Routing, split pages in separate Controllers or Methods. Create separate Admin part, use Databases, etc.
