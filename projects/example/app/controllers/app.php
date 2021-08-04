@@ -8,7 +8,6 @@ class App_Controller extends Controller
 {
     protected function app_init()
     {
-        $this->need_model   = false;
         $this->do_render    = false;
     }
 

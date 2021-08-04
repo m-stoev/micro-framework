@@ -63,6 +63,7 @@ switch (SERVER_NAME) {
         break;
 
     case 'wix-nuvei-app.hostmi.dev':
+    case 'micro-framework':
         // for admin only
         define('MYSQL_DUMP_HOST', 'localhost');
         define('DB', '');

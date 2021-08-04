@@ -37,24 +37,25 @@ class Router
         
         # The Routing
         // home
-        if ($data[0] == '') {
+        if (!isset($data[0]) || $data[0] == '') {
             $url_data['controller'] = 'home';
         }
-        elseif ($data[0] == 'app_url') {
+        // custom route
+        elseif ($data[0] != '') {
             $url_data['controller'] = 'home';
-            $url_data['action']     = 'app_url';
+            $url_data['action']     = $data[0];
         }
-        // last chance: /controller/action/
-        elseif (isset($data[0])) {
-            $url_data['controller'] = $data[0];
-            $url_data['action']     = 'index';
-
-            if (isset($data[1]) and $data[1] != '') {
-                $url_data['action'] = $data[1];
-            }
-        }
+        // route of type /controller/action/
+//        elseif (isset($data[0])) {
+//            $url_data['controller'] = $data[0];
+//            $url_data['action']     = 'index';
+//
+//            if (isset($data[1]) and $data[1] != '') {
+//                $url_data['action'] = $data[1];
+//            }
+//        }
         else {
-            $url_data['controller']     = 'static_pages';
+            $url_data['controller']     = 'home';
             $url_data['params']['page'] = 'error404';
         }
         
