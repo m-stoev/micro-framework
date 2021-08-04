@@ -1,9 +1,9 @@
-*
+/**
 
-!.gitignore
-README.md
-changelog.txt
+!/.gitignore
+!/README.md
+!/changelog.txt
 
-!classes/*
-!core/*
-!projects/example/*
+!/classes/
+!/core/
+!/projects/example/**
