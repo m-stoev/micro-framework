@@ -1,0 +1,20 @@
+AddDefaultCharset UTF-8
+Options -Indexes
+RewriteEngine On
+
+#Add Trailing slash for end of the URL
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*[^/])$ /$1/ [L,R]
+
+RewriteCond %{HTTP_HOST} !^$
+RewriteCond %{HTTP_HOST}  ^www.(.+)$ [NC]
+RewriteRule ^/(.*) https://%1/$1/ [L,R=301]
+
+# rewrite public elements path
+RewriteRule ^(imgs|css|js|flags|libs|video|fonts)\/(.*)$ public/$1/$2
+
+# Bootstrap
+RewriteCond %{REQUEST_URI} !.(gif|png|jpg|ico|html|css|js)$ [NC]
+RewriteCond %{REQUEST_URI} !-f
+RewriteCond %{REQUEST_URI} !-d
+RewriteRule ^(.*)/$ index.php?url=$1 [NC,L,QSA]

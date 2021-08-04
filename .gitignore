@@ -6,4 +6,5 @@
 
 !/classes/
 !/core/
-!/projects/example/**
+
+!/projects/
