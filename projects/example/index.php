@@ -1,13 +1,16 @@
 <?php
 
 /**
- * Framework main file.
- * This file can be moved in projects/project_name/ with others project's directories like: 
- * app, config, logs, tmp and public.
+ * Site main file.
+ * This is multi projects configuration.
+ * 
+ * In case of single project configuration, this file can be moved in the root,
+ * next to core and classes directories.
+ * You must move all other files and directories with it: app, config, logs, tmp, public, etc.
  * 
  * classes/ and core/ can not be in project directory!
  * 
- * @version 0.9.1
+ * @version 0.9.2
  * @autor Miroslav Stoev
  * @package micro-framework
  */
