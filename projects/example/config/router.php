@@ -27,7 +27,7 @@ class Router
         
         $data = explode('/', $get_url);
         
-        //var_dump($data);
+//        var_dump($data);
 
         // check for language in the URL
         if (strlen($data[0]) == 2) {
@@ -40,11 +40,6 @@ class Router
         if (!isset($data[0]) || $data[0] == '') {
             $url_data['controller'] = 'home';
         }
-        // custom route
-        elseif ($data[0] != '') {
-            $url_data['controller'] = 'home';
-            $url_data['action']     = $data[0];
-        }
         // route of type /controller/action/
 //        elseif (isset($data[0])) {
 //            $url_data['controller'] = $data[0];
@@ -56,7 +51,7 @@ class Router
 //        }
         else {
             $url_data['controller']     = 'home';
-            $url_data['params']['page'] = 'error404';
+            $url_data['action'] = 'error404';
         }
         
 //        var_dump($url_data);

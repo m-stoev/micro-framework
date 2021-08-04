@@ -8,7 +8,7 @@ class App_Controller extends Controller
 {
     protected function app_init()
     {
-        $this->do_render    = false;
+        //$this->do_render    = false;
     }
 
 }

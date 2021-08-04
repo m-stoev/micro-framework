@@ -1,0 +1,31 @@
+﻿
+
+2021-08-04 18:11:58
+1. File <strong>'home.php'</strong> containing class <strong>'Home_Controller'</strong> might be missing.
+2. Method <strong>'sdfsdf'</strong> is missing in <strong>'home.php'</strong>
+3. Address: /sdfsdf/
+4. Redirect to: /error404/﻿
+
+2021-08-04 18:14:25
+1. File <strong>'home.php'</strong> containing class <strong>'Home_Controller'</strong> might be missing.
+2. Method <strong>'sdfsdf'</strong> is missing in <strong>'home.php'</strong>
+3. Address: /sdfsdf/
+4. Redirect to: /error404/﻿
+
+2021-08-04 18:14:27
+1. File <strong>'home.php'</strong> containing class <strong>'Home_Controller'</strong> might be missing.
+2. Method <strong>'sdfsdf'</strong> is missing in <strong>'home.php'</strong>
+3. Address: /sdfsdf/
+4. Redirect to: /error404/﻿
+
+2021-08-04 18:14:42
+1. File <strong>'home.php'</strong> containing class <strong>'Home_Controller'</strong> might be missing.
+2. Method <strong>'sdfsdf'</strong> is missing in <strong>'home.php'</strong>
+3. Address: /sdfsdf/
+4. Redirect to: /error404/﻿
+
+2021-08-04 18:14:57
+1. File <strong>'home.php'</strong> containing class <strong>'Home_Controller'</strong> might be missing.
+2. Method <strong>'sdfsdf'</strong> is missing in <strong>'home.php'</strong>
+3. Address: /sdfsdf/
+4. Redirect to: /error404/

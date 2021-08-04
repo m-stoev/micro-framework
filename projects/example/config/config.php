@@ -69,7 +69,7 @@ switch (SERVER_NAME) {
         define('DB', '');
         define('USER', '');
         define('PASS', '');
-        define('DEBUG_MODE', true);
+        define('DEBUG_MODE', false);
         break;
 
     default:
