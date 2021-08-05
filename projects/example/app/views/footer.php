@@ -12,39 +12,14 @@
             require VIEWS_PATH . $controller . DS . '_footer_' . $action . '.php';
         }
 
-        // 2 other php file to include
-        if(!empty($custom_footer)) {
-            // check for extension
-            $ext_pos = stripos($custom_footer, '.php');
-            
-            if($ext_pos < 0)  {
-                $custom_footer .= '.php';
-            }
-
-            if(defined('VIEWS_PATH')) {
-                if(is_readable(VIEWS_PATH . $controller . DS . $custom_footer)) {
-                    require VIEWS_PATH . $controller . DS . $custom_footer;
-                }
-                elseif(is_readable(VIEWS_PATH . 'elements' . DS . $custom_footer)) {
-                    require VIEWS_PATH .'elements' . DS . $custom_footer;
-                }
-            }
+        // 2 load file by full path
+        if(!empty($custom_footer) && is_file($custom_footer) && is_readable($custom_footer)) {
+            require $custom_footer;
         }
 
-        // 3 js file to include
-        if(defined('JS_PATH')) {
-            if(is_readable(JS_PATH . $controller . DS . $action . '.js')) {
-                echo '<script type="text/javascript" src="/js/' . $controller . '/' . $action . '.js"></script>';
-            }
-            elseif(!empty($custom_js_footer) && is_readable(JS_PATH . $controller . DS . $custom_js_footer)) {
-                // check for extension
-                $ext_pos = stripos($custom_footer, '.js');
-                if($ext_pos < 0) {
-                    $custom_js_footer .= '.js';
-                }
-
-                echo '<script type="text/javascript" src="/js/' . $controller . '/' . $custom_js_footer . '"></script>';
-            }
+        // 3 auto load js file
+        if(defined('JS_PATH') && is_readable(JS_PATH . $controller . DS . $action . '.js')) {
+            echo '<script type="text/javascript" src="/js/' . $controller . '/' . $action . '.js"></script>';
         }
 		?>
 	</body>

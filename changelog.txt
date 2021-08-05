@@ -2,6 +2,10 @@ Changelog for Micro-Framework
 
 ###
 
+version 0.9.4
+	* Changes in the views files.
+	* Added example for the html header elements.
+
 version 0.9.3
 	* Added example for templates load.
 

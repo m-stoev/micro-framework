@@ -9,6 +9,8 @@ class App_Controller extends Controller
     protected function app_init()
     {
         //$this->do_render    = false;
+        
+        $this->view_assign('header_title', 'example title');
     }
 
 }
