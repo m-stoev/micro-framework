@@ -8,12 +8,14 @@ RewriteRule ^(.*[^/])$ /$1/ [L,R]
 
 RewriteCond %{HTTP_HOST} !^$
 RewriteCond %{HTTP_HOST}  ^www.(.+)$ [NC]
+# check if your site is http or https
 RewriteRule ^/(.*) https://%1/$1/ [L,R=301]
 
 # rewrite public elements path
 RewriteRule ^(imgs|css|js|flags|libs|video|fonts)\/(.*)$ public/$1/$2
 
 # Bootstrap
+# add more extensions here if you need
 RewriteCond %{REQUEST_URI} !.(gif|png|jpg|ico|html|css|js)$ [NC]
 RewriteCond %{REQUEST_URI} !-f
 RewriteCond %{REQUEST_URI} !-d
