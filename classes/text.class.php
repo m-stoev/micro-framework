@@ -284,6 +284,7 @@ class Text
         }
         
         $string     = date('Y-m-d H:i:s') . ' | ';
+        $title      = trim($title);
         $data_str   = '';
         
         if(!empty($title)) {
@@ -293,6 +294,8 @@ class Text
             else {
                 $string .= json_encode($title);
             }
+            
+            $string .= "\r\n";
         }
         
         if(is_array($data) || is_object($data)) {
@@ -302,11 +305,14 @@ class Text
             $data_str = $data ? 'true' : 'false';
         }
         else {
-             $data_str = $data;
+            $data_str = $data;
         }
         
-        $string .= "\r\n";
-        $string .= $data_str . "\r\n\r\n";
+        if(!empty($data_str)) {
+            $string .= $data_str;
+        }
+        
+        $string .= "\r\n\r\n";
         
         try {
             file_put_contents(
