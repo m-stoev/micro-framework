@@ -2,6 +2,9 @@ Changelog for Micro-Framework
 
 ###
 
+version 0.9.5
+	* Fix for the logger function when pass only title.
+
 version 0.9.4
 	* Changes in the views files.
 	* Added example for the html header elements.

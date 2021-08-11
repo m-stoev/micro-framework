@@ -286,13 +286,6 @@ class Text
         $string     = date('Y-m-d H:i:s') . ' | ';
         $data_str   = '';
         
-        if(is_array($data) || is_object($data)) {
-            $data_str = $beauty_log ? print_r($data, true) : json_encode($data);
-        }
-        elseif(is_bool($data)) {
-            $data_str = $data ? 'true' : 'false';
-        }
-        
         if(!empty($title)) {
             if(is_string($title)) {
                 $string .= $title;
@@ -300,6 +293,16 @@ class Text
             else {
                 $string .= json_encode($title);
             }
+        }
+        
+        if(is_array($data) || is_object($data)) {
+            $data_str = $beauty_log ? print_r($data, true) : json_encode($data);
+        }
+        elseif(is_bool($data)) {
+            $data_str = $data ? 'true' : 'false';
+        }
+        else {
+             $data_str = $data;
         }
         
         $string .= "\r\n";
