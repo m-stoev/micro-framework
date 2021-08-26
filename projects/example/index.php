@@ -10,7 +10,7 @@
  * 
  * classes/ and core/ can not be in project directory!
  * 
- * @version 0.9.5
+ * @version 0.9.6
  * @author Miroslav Stoev
  * @package micro-framework
  */

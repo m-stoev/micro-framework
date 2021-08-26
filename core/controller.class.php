@@ -333,11 +333,11 @@ class Controller
      */
     protected function get_var($name, $false_val = false)
     {
-        if (!isset($_GET[$name])) {
+        if (isset($_GET[$name])) {
             return filter_var($_GET[$name]);
         }
 
-        if (!isset($_POST[$name])) {
+        if (isset($_POST[$name])) {
             return filter_var($_POST[$name]);
         }
 
