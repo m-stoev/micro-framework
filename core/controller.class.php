@@ -6,7 +6,7 @@
  * @author Miroslav Stoev
  * @package micro-framework
  */
-class Controller
+class Controller extends Common
 {
     protected $controller   = '';
     protected $model        = '';
@@ -330,18 +330,12 @@ class Controller
      * @param mixed $false_val value to return if there is no variable
      * 
      * @return mixed
+     * 
+     * @deprecated since version 0.9.7
      */
     protected function get_var($name, $false_val = false)
     {
-        if (isset($_GET[$name])) {
-            return filter_var($_GET[$name]);
-        }
-
-        if (isset($_POST[$name])) {
-            return filter_var($_POST[$name]);
-        }
-
-        return $false_val;
+        return $this->get_value($name, $false_val);
     }
 
     /**

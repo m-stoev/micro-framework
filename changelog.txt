@@ -2,6 +2,9 @@ Changelog for Micro-Framework
 
 ###
 
+version 0.9.7
+	* Introducing Common class. We will move in it some common methods for the Controllers and the Models.
+
 version 0.9.6
 	* Fix for the get_var() method.
 

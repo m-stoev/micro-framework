@@ -8,7 +8,7 @@
  * @author Miroslav Stoev
  * @package micro-framework
  */
-class SQL_Query
+class SQL_Query extends Common
 {
     public $query_debug   = false; // print query
     public $show_num_rows = false; // print number of rows
