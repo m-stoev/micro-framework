@@ -39,9 +39,10 @@ if(empty($_SERVER['SERVER_NAME'])) {
 }
 
 define('HOST',          'localhost');
-define('SERVER_NAME',   filter_var($_SERVER['SERVER_NAME'], FILTER_SANITIZE_URL, FILTER_NULL_ON_FAILURE));
-define('WEB_ROOT',      'https://' . SERVER_NAME . COOKIE_PATH);
-define('SALT',          'some sALt'); // salt for crypt token
+define('SERVER_NAME',   filter_var($_SERVER['SERVER_NAME'], FILTER_SANITIZE_URL));
+define('REMOTE_ADDR',   filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP));
+//define('WEB_ROOT',      'https://' . SERVER_NAME . COOKIE_PATH);
+//define('SALT',          'some sALt'); // salt for crypt token
 
 // possible field names holding passwords, because before php 5.6
 // we do not have const array we will use string, and then will explode it by ","
@@ -53,39 +54,32 @@ define('AUTOLOGIN_IPS', json_encode([])); // auto login IPs
 
 # DB configurations
 switch (SERVER_NAME) {
-    case 'wix-nuvei-app.hostmi.eu':
-        // for admin only
-        define('MYSQL_DUMP_HOST', '');
-        define('DB', '');
-        define('USER', '');
-        define('PASS', '');
-        define('DEBUG_MODE', false);
-        break;
-
-    case 'wix-nuvei-app.hostmi.dev':
     case 'micro-framework':
         // for admin only
-        define('MYSQL_DUMP_HOST', 'localhost');
-        define('DB', '');
-        define('USER', '');
-        define('PASS', '');
-        define('DEBUG_MODE', false);
+        define('MYSQL_DUMP_HOST',   'localhost');
+        define('DB',                '');
+        define('USER',              '');
+        define('PASS',              '');
+        define('DEBUG_MODE',        true);
+        define('BEAUTY_LOG',        true);
         break;
 
     default:
         die('Wrong configs for this domain. Please check config file!');
 }
 
-if(empty($_SERVER['REMOTE_ADDR'])) {
-    error_reporting(DEBUG_MODE ? E_ALL : 0);
+// show errors
+if(defined('DEBUG_MODE') && DEBUG_MODE) {
+    error_reporting(E_ALL);
 }
-elseif(defined('TRUSTED_IPS')) {
-    error_reporting(
-        (DEBUG_MODE or in_array(
-            filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_NULL_ON_FAILURE),
-            json_decode(TRUSTED_IPS)
-        ) ? E_ALL : 0)
-    );
+elseif(defined('TRUSTED_IPS')
+    && is_array(TRUSTED_IPS)
+    && in_array(REMOTE_ADDR, TRUSTED_IPS) 
+) {
+    error_reporting(E_ALL);
+}
+else {
+    error_reporting(0);
 }
 
 # if we are in admin site we set lifetime to 30 min, else it has no limit

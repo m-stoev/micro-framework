@@ -8,23 +8,26 @@
  * next to core and classes directories.
  * You must move all other files and directories with it: app, config, logs, tmp, public, etc.
  * 
- * classes/ and core/ can not be in project directory!
+ * classes/ and core/ can not be in project directory, but in the root!
  * 
- * @version 0.9.6
  * @author Miroslav Stoev
  * @package micro-framework
  */
 
 mb_internal_encoding('UTF-8');
+
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__FILE__) . DS);
-
-session_start();
 
 require_once ROOT . 'config' . DS . 'router.php';
 $url_data = Router::get_url_data();
 
 require_once ROOT . 'config' . DS . 'config.php';
-require_once CORE_PATH . 'builder.class.php';
+
+if (is_readable(FW_ROOT . 'vendor' . DS . 'autoload.php')) {
+    require_once FW_ROOT . 'vendor' . DS . 'autoload.php';
+}
+
+require_once CORE_PATH . 'Builder.php';
 Builder::run($url_data);
 unset($url_data);
