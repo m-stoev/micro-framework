@@ -1,9 +1,2 @@
-*
-
-!.gitignore
-!README.md
-!changelog.txt
-
-!classes
-!core
+projects/*
 !projects/example/*
