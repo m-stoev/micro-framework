@@ -2,31 +2,38 @@ Changelog for Micro-Framework
 
 ###
 
+version 0.10.0
+    * Turn help classes into Traits except Text class.
+    * Removed Common class.
+    * File names are same as classes names.
+    * Do not start the Session in the project index file anymore.
+    * Option to use different log files names for different configurations.
+
 version 0.9.7
-	* Introducing Common class. We will move in it some common methods for the Controllers and the Models.
+    * Introducing Common class. We will move in it some common methods for the Controllers and the Models.
 
 version 0.9.6
-	* Fix for the get_var() method.
+    * Fix for the get_var() method.
 
 version 0.9.5
-	* Fix for the logger function when pass only title.
+    * Fix for the logger function when pass only title.
 
 version 0.9.4
-	* Changes in the views files.
-	* Added example for the html header elements.
+    * Changes in the views files.
+    * Added example for the html header elements.
 
 version 0.9.3
-	* Added example for templates load.
+    * Added example for templates load.
 
 version 0.9.2
-	* Added example project in projects directory.
+    * Added example project in projects directory.
 
 version 0.9.1
-	* Attention - Do not use this version with previously created sites!
-	* Cleared and updated the files in core and classes directories.
-	* Added example configuration files.
+    * Attention - Do not use this version with previously created sites!
+    * Cleared and updated the files in core and classes directories.
+    * Added example configuration files.
 
 version 0.9.0
-	* First commit.
-	* Simple example must be added.
-	* Documentation is not ready.
+    * First commit.
+    * Simple example must be added.
+    * Documentation is not ready.
