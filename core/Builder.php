@@ -80,25 +80,54 @@ class Builder
             return;
         }
         
+        $class_name_uc = ucfirst($class_name);
+        
         // check for the class in root/core path
-        if (is_readable(CORE_PATH . $class_name . '.php')) {
-            require_once CORE_PATH . $class_name . '.php';
-            return;
+        if (defined('CORE_PATH')) {
+            if (is_readable(CORE_PATH . $class_name . '.php')) {
+                require_once CORE_PATH . $class_name . '.php';
+                return;
+            }
+            elseif (is_readable(CORE_PATH . $class_name_uc . '.php')) {
+                require_once CORE_PATH . $class_name_uc . '.php';
+                return;
+            }
         }
+        
         // check for the class in project_name/app/controllers path
-        if (is_readable(CONTROLLERS_PATH . $class_name . '.php')) {
-            require_once CONTROLLERS_PATH . $class_name . '.php';
-            return;
+        if (defined('CONTROLLERS_PATH')) {
+            if (is_readable(CONTROLLERS_PATH . $class_name . '.php')) {
+                require_once CONTROLLERS_PATH . $class_name . '.php';
+                return;
+            }
+            elseif (is_readable(CONTROLLERS_PATH . $class_name_uc . '.php')) {
+                require_once CONTROLLERS_PATH . $class_name_uc . '.php';
+                return;
+            }
         }
+        
         // check for the class in project_name/app/models path
-        if (defined('MODELS_PATH') && is_readable(MODELS_PATH . $class_name . '.php')) {
-            require_once MODELS_PATH . $class_name . '.php';
-            return;
+        if (defined('MODELS_PATH')) {
+            if (is_readable(MODELS_PATH . $class_name . '.php')) {
+                require_once MODELS_PATH . $class_name . '.php';
+                return;
+            }
+            elseif (is_readable(MODELS_PATH . $class_name_uc . '.php')) {
+                require_once MODELS_PATH . $class_name_uc . '.php';
+                return;
+            }
         }
+        
         // check for the class in root/classes path
-        if (defined('CLASSES_PATH') && is_readable(CLASSES_PATH . $class_name . '.php')) {
-            require_once CLASSES_PATH . $class_name . '.php';
-            return;
+        if (defined('CLASSES_PATH')) {
+            if (is_readable(CLASSES_PATH . $class_name . '.php')) {
+                require_once CLASSES_PATH . $class_name . '.php';
+                return;
+            }
+            elseif (is_readable(CLASSES_PATH . $class_name_uc . '.php')) {
+                require_once CLASSES_PATH . $class_name_uc . '.php';
+                return;
+            }
         }
         
         self::on_error(
