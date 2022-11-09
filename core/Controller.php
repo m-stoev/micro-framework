@@ -48,12 +48,7 @@ class Controller
 
     public function __destruct() {
         if ($this->do_render) {
-            if (class_exists('Smarty')) {
-                $this->render_smarty();
-            }
-            else {
-                $this->render();
-            }
+            $this->render();
         }
 
         // execute the destructor_filter - background process

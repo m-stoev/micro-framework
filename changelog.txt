@@ -2,6 +2,11 @@ Changelog for Micro-Framework
 
 ###
 
+version 0.12.1
+```
+    * Do not check for Smarty in Controller destructor.
+```
+
 version 0.12.0
 ```
     * When search for a class file by $class_name, search also for file with same, but with first upper case.
