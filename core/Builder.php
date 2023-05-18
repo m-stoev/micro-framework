@@ -22,7 +22,9 @@ class Builder
 
         // generate class name if we have name from 2 words
         if (isset($url_data['controller'])) {
-            $class_name = $class = $url_data['controller'];
+            $tmp_name   = str_replace("-", "", $url_data['controller']);
+            $class_name = $class
+                        = str_replace("_", "", $tmp_name);
         }
 
         $action = isset($url_data['action']) ? str_replace("-", "_", $url_data['action']) : 'index'; // check for action

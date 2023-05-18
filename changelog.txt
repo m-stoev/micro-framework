@@ -2,6 +2,11 @@ Changelog for Micro-Framework
 
 ###
 
+version 0.12.2
+```
+    * Allow controller class to contain "-" and "_" in the URL.
+```
+
 version 0.12.1
 ```
     * Do not check for Smarty in Controller destructor.
